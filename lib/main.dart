@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 
 void main() {
   runApp(new MaterialApp(
@@ -16,19 +18,45 @@ class LandingScreen extends StatefulWidget {
 
 class _LandingScreenState extends State<LandingScreen> {
   File? imageFile;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      _openFile();
+    });
+  }
+  _saveFile(File file) async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+    String fileName = basename(file.path);
+    String filePath = '$appDocPath/$fileName';
+    await file.copy(filePath);
+  }
+  _openFile() async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    var fileSystemEntity = appDocDir.listSync();
+    fileSystemEntity.removeWhere((element) => !basename(element.path).contains(".jpg"));
+    if (fileSystemEntity.isNotEmpty) {
+      setState(() {
+        imageFile = File(fileSystemEntity.first.path);
+      });
+    }
+  }
   _openGallery(BuildContext context) async {
     var picture = await ImagePicker().pickImage(source: ImageSource.gallery);
-    this.setState(() {
-      imageFile = picture as File;
+    setState(() {
+      imageFile = File(picture!.path);
     });
+    _saveFile(imageFile!);
     Navigator.of(context).pop();
   }
 
   _openCamera(BuildContext context) async {
     var picture = await ImagePicker().pickImage(source: ImageSource.camera);
     this.setState(() {
-      imageFile = picture as File;
+      imageFile = File(picture!.path);
     });
+    _saveFile(imageFile!);
     Navigator.of(context).pop();
   }
 
