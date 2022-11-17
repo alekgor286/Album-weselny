@@ -18,10 +18,11 @@ class LandingScreen extends StatefulWidget {
 
 class _LandingScreenState extends State<LandingScreen> {
   File? imageFile;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _openFile();
     });
   }
@@ -101,9 +102,34 @@ class _LandingScreenState extends State<LandingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Album weselny"),
+        title: const Text('Album weselny'),
+        actions: <Widget>[
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.local_print_shop_outlined),
+            tooltip: 'Drukuj',
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.photo_camera_outlined),
+            tooltip: 'Zrób zdjęcie',
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.image),
+            tooltip: 'Wybierz zdjęcie z galerii',
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.ios_share_rounded),
+            tooltip: 'Udostępnij',
+          ),
+        ],
+        backgroundColor: Colors.teal,
       ),
+
       body: Container(
+
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -114,10 +140,38 @@ class _LandingScreenState extends State<LandingScreen> {
                   _showChoiceDialog(context);
                 },
                 child: Text("Wybierz zdjecie"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                )
               ),
             ],
           ),
         )),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.content_copy_rounded),
+            label: 'Skopiuj',
+            backgroundColor: Colors.teal,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.text_format),
+            label: 'Tekst',
+            backgroundColor: Colors.teal,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.edit),
+            label: 'Upiększ',
+            backgroundColor: Colors.teal,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.photo_filter ),
+            label: 'Filtry',
+            backgroundColor: Colors.teal,
+          ),
+        ],
+        selectedItemColor: Colors.black,
+      ),
     );
   }
 
