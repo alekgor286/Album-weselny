@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -7,8 +8,46 @@ import 'package:path/path.dart';
 void main() {
   runApp(new MaterialApp(
     title: "Album weselny",
-    home: LandingScreen(),
-  ));
+    initialRoute: '/',
+    routes: {
+      '/': (context) => LandingScreen(),
+      '/detail': (context) => DetailScreen(image: new File('')),
+    }),
+  );
+}
+
+class DetailScreen extends StatelessWidget {
+  final File image;
+
+  DetailScreen({Key? key, required this.image})
+      : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Szczegóły'),
+        backgroundColor: Colors.teal,
+      ),
+      body: Column(
+        children: [
+          AspectRatio(
+            aspectRatio: 1,
+            child: Container(
+              width: double.infinity,
+              child: Image(
+                image: FileImage(image),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class PhotoItem {
+  final File image;
+  PhotoItem(this.image);
 }
 
 class LandingScreen extends StatefulWidget {
@@ -17,7 +56,7 @@ class LandingScreen extends StatefulWidget {
 }
 
 class _LandingScreenState extends State<LandingScreen> {
-  File? imageFile;
+  List<PhotoItem> _items = [];
 
   @override
   void initState() {
@@ -37,27 +76,29 @@ class _LandingScreenState extends State<LandingScreen> {
     Directory appDocDir = await getApplicationDocumentsDirectory();
     var fileSystemEntity = appDocDir.listSync();
     fileSystemEntity.removeWhere((element) => !basename(element.path).contains(".jpg"));
-    if (fileSystemEntity.isNotEmpty) {
+    for (var element in fileSystemEntity) {
       setState(() {
-        imageFile = File(fileSystemEntity.first.path);
+        _items.add(PhotoItem(File(element.path)));
       });
     }
   }
   _openGallery(BuildContext context) async {
     var picture = await ImagePicker().pickImage(source: ImageSource.gallery);
+    var file = File(picture!.path);
     setState(() {
-      imageFile = File(picture!.path);
+      _items.add(PhotoItem(file));
     });
-    _saveFile(imageFile!);
+    _saveFile(file);
     Navigator.of(context).pop();
   }
 
   _openCamera(BuildContext context) async {
     var picture = await ImagePicker().pickImage(source: ImageSource.camera);
+    var file = File(picture!.path);
     this.setState(() {
-      imageFile = File(picture!.path);
+      _items.add(PhotoItem(file));
     });
-    _saveFile(imageFile!);
+    _saveFile(file);
     Navigator.of(context).pop();
   }
 
@@ -91,10 +132,39 @@ class _LandingScreenState extends State<LandingScreen> {
   }
 
   Widget _decideImageView() {
-    if (imageFile == null) {
+    if (_items.isEmpty) {
       return Text("Nie wybrano zdjecia!");
     } else {
-      return Image.file(imageFile!, width: 400, height: 400);
+      return GridView.builder(
+          shrinkWrap: true,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisSpacing: 0,
+          mainAxisSpacing: 0,
+          crossAxisCount: 3,
+      ),
+    itemCount: _items.length,
+    itemBuilder: (context, index) {
+      return new GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DetailScreen(
+                  image: _items[index].image,
+                  ),
+            ),
+          );
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              fit: BoxFit.cover,
+              image: FileImage(_items[index].image),
+            ),
+          ),
+        ),
+      );
+    });
     }
   }
 
