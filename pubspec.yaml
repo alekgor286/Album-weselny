@@ -30,6 +30,10 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   image_picker:
+  drag_and_drop_gridview:
+    git:
+      url: https://github.com/DevOrbiter/drag_and_drop_gridview.git
+      ref: master
   path_provider:
   flutter:
     sdk: flutter

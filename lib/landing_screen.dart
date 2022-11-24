@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
+import 'package:drag_and_drop_gridview/devdrag.dart';
 
 import 'details_screen.dart';
 import 'main.dart';
@@ -16,6 +17,7 @@ class LandingScreen extends StatefulWidget {
 
 class _LandingScreenState extends State<LandingScreen> {
   List<PhotoItem> _items = [];
+  ScrollController? _scrollController;
 
   @override
   void initState() {
@@ -34,6 +36,9 @@ class _LandingScreenState extends State<LandingScreen> {
   }
 
   _openFile() async {
+    setState(() {
+      _items = [];
+    });
     Directory appDocDir = await getApplicationDocumentsDirectory();
     var fileSystemEntity = appDocDir.listSync();
     fileSystemEntity
@@ -98,14 +103,25 @@ class _LandingScreenState extends State<LandingScreen> {
     if (_items.isEmpty) {
       return Text("Nie wybrano zdjecia!");
     } else {
-      return GridView.builder(
-          shrinkWrap: true,
+      return DragAndDropGridView(
+          controller: _scrollController,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisSpacing: 0,
-            mainAxisSpacing: 0,
+            crossAxisSpacing: 25,
+            mainAxisSpacing: 25,
             crossAxisCount: 3,
           ),
+          padding: const EdgeInsets.all(20),
           itemCount: _items.length,
+          onWillAccept: (oldIndex, newIndex) {
+            return true;
+          },
+          onReorder: (oldIndex, newIndex) {
+            final temp = _items[oldIndex];
+            _items[oldIndex] = _items[newIndex];
+            _items[newIndex] = temp;
+
+            setState(() {});
+          },
           itemBuilder: (context, index) {
             return GestureDetector(
               onTap: () {
@@ -116,7 +132,7 @@ class _LandingScreenState extends State<LandingScreen> {
                       image: _items[index].image,
                     ),
                   ),
-                );
+                ).then((value) => _openFile());
               },
               child: Container(
                 decoration: BoxDecoration(
