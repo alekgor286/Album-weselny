@@ -184,7 +184,7 @@ class _LandingScreenState extends State<LandingScreen> {
         ),
       ),
       body: Container(
-          child: Center(
+          child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
