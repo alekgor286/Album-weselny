@@ -6,6 +6,10 @@ class DetailScreen extends StatelessWidget {
 
   const DetailScreen({Key? key, required this.image}) : super(key: key);
 
+  _deleteFile() async {
+    await image.delete();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,6 +25,7 @@ class DetailScreen extends StatelessWidget {
         ),
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           AspectRatio(
             aspectRatio: 1,
@@ -31,6 +36,15 @@ class DetailScreen extends StatelessWidget {
               ),
             ),
           ),
+          ElevatedButton(
+              onPressed: () {
+                _deleteFile();
+                Navigator.pop(context);
+              },
+              child: Text("Usuń zdjęcie"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.lightBlueAccent,
+              )),
         ],
       ),
     );
