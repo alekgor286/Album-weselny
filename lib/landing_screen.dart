@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,6 +19,8 @@ class LandingScreen extends StatefulWidget {
 class _LandingScreenState extends State<LandingScreen> {
   List<PhotoItem> _items = [];
   ScrollController? _scrollController;
+  var currentPage = 1;
+  var allPages = 1;
 
   @override
   void initState() {
@@ -41,8 +44,11 @@ class _LandingScreenState extends State<LandingScreen> {
     });
     Directory appDocDir = await getApplicationDocumentsDirectory();
     var fileSystemEntity = appDocDir.listSync();
+    log('data: $fileSystemEntity');
     fileSystemEntity
         .removeWhere((element) => !basename(element.path).contains(".jpg"));
+    log('data: $fileSystemEntity');
+
     for (var element in fileSystemEntity) {
       setState(() {
         _items.add(PhotoItem(File(element.path)));
@@ -104,6 +110,7 @@ class _LandingScreenState extends State<LandingScreen> {
       return Text("Nie wybrano zdjecia!");
     } else {
       return DragAndDropGridView(
+          key: ValueKey(currentPage),
           controller: _scrollController,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisSpacing: 25,
@@ -189,14 +196,65 @@ class _LandingScreenState extends State<LandingScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             _decideImageView(),
-            ElevatedButton(
-                onPressed: () {
-                  _showChoiceDialog(context);
-                },
-                child: Text("Wybierz zdjecie"),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightBlueAccent,
-                )),
+                ElevatedButton(
+                    onPressed: () {
+                      _showChoiceDialog(context);
+                    },
+                    child: Text("Wybierz zdjecie"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.lightBlueAccent,
+                    )),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    FloatingActionButton(
+                      backgroundColor: Colors.amberAccent,
+                      onPressed: ()=> {
+                        if(currentPage>1) {
+                          setState(() => currentPage--)
+                        }
+                      },
+                      child: const Icon(
+                        Icons.arrow_left,
+                        size: 35,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Container(
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.grey,
+                      ),
+                      padding: const EdgeInsets.all(20),
+                      child: Text('$currentPage/$allPages',
+                          style: const TextStyle(color: Colors.white)),
+                    ),
+                    FloatingActionButton(
+                        backgroundColor: Colors.amberAccent,
+                        onPressed: ()=> {
+                          if(currentPage<allPages) {
+                            setState(() => currentPage++)
+                          }
+                        },
+                        child: const Icon(
+                          Icons.arrow_right,
+                          size: 35,
+                          color: Colors.black,
+                        )
+                    ),
+                    FloatingActionButton(
+                        backgroundColor: Colors.amberAccent,
+                        onPressed: ()=> {
+                            setState(() => allPages++)
+                        },
+                        child: const Icon(
+                          Icons.add_to_photos,
+                          size: 35,
+                          color: Colors.black,
+                        )
+                    ),
+                  ],
+                )
           ],
         ),
       )),
@@ -220,6 +278,11 @@ class _LandingScreenState extends State<LandingScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.photo_filter),
             label: 'Filtry',
+            backgroundColor: Colors.lightBlueAccent,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_to_photos),
+            label: 'Nowa Strona',
             backgroundColor: Colors.lightBlueAccent,
           ),
         ],
