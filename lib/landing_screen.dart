@@ -17,7 +17,7 @@ class LandingScreen extends StatefulWidget {
 }
 
 class _LandingScreenState extends State<LandingScreen> {
-  List<PhotoItem> _items = [];
+  final List<List<PhotoItem>> _items = [[]];
   ScrollController? _scrollController;
   var currentPage = 1;
   var allPages = 1;
@@ -40,7 +40,7 @@ class _LandingScreenState extends State<LandingScreen> {
 
   _openFile() async {
     setState(() {
-      _items = [];
+      _items[currentPage-1] = [];
     });
     Directory appDocDir = await getApplicationDocumentsDirectory();
     var fileSystemEntity = appDocDir.listSync();
@@ -51,7 +51,7 @@ class _LandingScreenState extends State<LandingScreen> {
 
     for (var element in fileSystemEntity) {
       setState(() {
-        _items.add(PhotoItem(File(element.path)));
+        _items[currentPage-1].add(PhotoItem(File(element.path)));
       });
     }
   }
@@ -60,7 +60,7 @@ class _LandingScreenState extends State<LandingScreen> {
     var picture = await ImagePicker().pickImage(source: ImageSource.gallery);
     var file = File(picture!.path);
     setState(() {
-      _items.add(PhotoItem(file));
+      _items[currentPage-1].add(PhotoItem(file));
     });
     _saveFile(file);
     Navigator.of(context).pop();
@@ -70,10 +70,15 @@ class _LandingScreenState extends State<LandingScreen> {
     var picture = await ImagePicker().pickImage(source: ImageSource.camera);
     var file = File(picture!.path);
     setState(() {
-      _items.add(PhotoItem(file));
+      _items[currentPage-1].add(PhotoItem(file));
     });
     _saveFile(file);
     Navigator.of(context).pop();
+  }
+
+  void _increment() {
+    setState(() => allPages++);
+    _items.add([]);
   }
 
   Future<void> _showChoiceDialog(BuildContext context) {
@@ -106,11 +111,10 @@ class _LandingScreenState extends State<LandingScreen> {
   }
 
   Widget _decideImageView() {
-    if (_items.isEmpty) {
+    if (_items[currentPage-1].isEmpty) {
       return Text("Nie wybrano zdjecia!");
     } else {
       return DragAndDropGridView(
-          key: ValueKey(currentPage),
           controller: _scrollController,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisSpacing: 25,
@@ -118,14 +122,14 @@ class _LandingScreenState extends State<LandingScreen> {
             crossAxisCount: 3,
           ),
           padding: const EdgeInsets.all(20),
-          itemCount: _items.length,
+          itemCount: _items[currentPage-1].length,
           onWillAccept: (oldIndex, newIndex) {
             return true;
           },
           onReorder: (oldIndex, newIndex) {
-            final temp = _items[oldIndex];
-            _items[oldIndex] = _items[newIndex];
-            _items[newIndex] = temp;
+            final temp = _items[currentPage-1][oldIndex];
+            _items[currentPage-1][oldIndex] = _items[currentPage-1][newIndex];
+            _items[currentPage-1][newIndex] = temp;
 
             setState(() {});
           },
@@ -136,7 +140,7 @@ class _LandingScreenState extends State<LandingScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => DetailScreen(
-                      image: _items[index].image,
+                      image: _items[currentPage-1][index].image,
                     ),
                   ),
                 ).then((value) => _openFile());
@@ -145,7 +149,7 @@ class _LandingScreenState extends State<LandingScreen> {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     fit: BoxFit.cover,
-                    image: FileImage(_items[index].image),
+                    image: FileImage(_items[currentPage-1][index].image),
                   ),
                 ),
               ),
@@ -191,6 +195,7 @@ class _LandingScreenState extends State<LandingScreen> {
         ),
       ),
       body: Container(
+          key: ValueKey(currentPage),
           child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -245,7 +250,7 @@ class _LandingScreenState extends State<LandingScreen> {
                     FloatingActionButton(
                         backgroundColor: Colors.amberAccent,
                         onPressed: ()=> {
-                            setState(() => allPages++)
+                          _increment()
                         },
                         child: const Icon(
                           Icons.add_to_photos,
