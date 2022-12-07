@@ -257,7 +257,7 @@ class _LandingScreenState extends State<LandingScreen> {
               ),
               IconButton(
                 icon: Icon(Icons.arrow_left),
-                tooltip: 'Skopiuj',
+                tooltip: 'Poprzednia strona',
                 color: Colors.white,
                 onPressed: ()=> {
                   if(currentPage>1) {
@@ -267,7 +267,7 @@ class _LandingScreenState extends State<LandingScreen> {
               ),
               IconButton(
                 icon: Icon(Icons.arrow_right),
-                tooltip: 'Skopiuj',
+                tooltip: 'Następna strona',
                 color: Colors.white,
                 onPressed: ()=> {
                   if(currentPage<allPages) {
