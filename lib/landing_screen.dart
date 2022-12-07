@@ -193,30 +193,44 @@ class _LandingScreenState extends State<LandingScreen> {
           ),
         ),
       ),
-      body: Container(
-          key: ValueKey(currentPage),
-          child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            _decideImageView(),
-                ElevatedButton(
-                    onPressed: () {
-                      _showChoiceDialog(context);
-                    },
-                    child: Text("Wybierz zdjecie"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.lightBlueAccent,
-                    )),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center
-                )
-          ],
-        ),
-      )),
+        body: Stack(
+            children: <Widget>[
+              Container(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        _decideImageView(),
+                        ElevatedButton(
+                            onPressed: () {
+                              _showChoiceDialog(context);
+                            },
+                            child: Text("Wybierz zdjecie"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.lightBlueAccent,
+                            )),
+                        Row(mainAxisAlignment: MainAxisAlignment.center)
+                      ],
+                    ),
+                  )),
+              Positioned(
+                  right: 5.0,
+                  bottom: 5.0,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xffFEBD2B),
+                    ),
+                    padding: const EdgeInsets.all(15),
+                    child: Text('$currentPage/$allPages',
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  )
+              ),
+            ]),
       bottomNavigationBar: BottomAppBar(
         color: Colors.lightBlueAccent,
         child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               IconButton(
                 icon: Icon(Icons.content_copy_rounded),
@@ -268,15 +282,6 @@ class _LandingScreenState extends State<LandingScreen> {
                 onPressed: ()=> {
                   _increment()
                 },
-              ),
-              Container(
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.grey,
-                ),
-                padding: const EdgeInsets.all(10),
-                child: Text('$currentPage/$allPages',
-                    style: const TextStyle(color: Colors.white)),
               )
             ]
       ),
