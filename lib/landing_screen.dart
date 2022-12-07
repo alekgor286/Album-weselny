@@ -47,7 +47,6 @@ class _LandingScreenState extends State<LandingScreen> {
     log('data: $fileSystemEntity');
     fileSystemEntity
         .removeWhere((element) => !basename(element.path).contains(".jpg"));
-    log('data: $fileSystemEntity');
 
     for (var element in fileSystemEntity) {
       setState(() {
@@ -210,89 +209,77 @@ class _LandingScreenState extends State<LandingScreen> {
                       backgroundColor: Colors.lightBlueAccent,
                     )),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    FloatingActionButton(
-                      backgroundColor: Colors.amberAccent,
-                      onPressed: ()=> {
-                        if(currentPage>1) {
-                          setState(() => currentPage--)
-                        }
-                      },
-                      child: const Icon(
-                        Icons.arrow_left,
-                        size: 35,
-                        color: Colors.black,
-                      ),
-                    ),
-                    Container(
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.grey,
-                      ),
-                      padding: const EdgeInsets.all(20),
-                      child: Text('$currentPage/$allPages',
-                          style: const TextStyle(color: Colors.white)),
-                    ),
-                    FloatingActionButton(
-                        backgroundColor: Colors.amberAccent,
-                        onPressed: ()=> {
-                          if(currentPage<allPages) {
-                            setState(() => currentPage++)
-                          }
-                        },
-                        child: const Icon(
-                          Icons.arrow_right,
-                          size: 35,
-                          color: Colors.black,
-                        )
-                    ),
-                    FloatingActionButton(
-                        backgroundColor: Colors.amberAccent,
-                        onPressed: ()=> {
-                          _increment()
-                        },
-                        child: const Icon(
-                          Icons.add_to_photos,
-                          size: 35,
-                          color: Colors.black,
-                        )
-                    ),
-                  ],
+                  mainAxisAlignment: MainAxisAlignment.center
                 )
           ],
         ),
       )),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.content_copy_rounded),
-            label: 'Skopiuj',
-            backgroundColor: Colors.lightBlueAccent,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.text_format),
-            label: 'Tekst',
-            backgroundColor: Colors.lightBlueAccent,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.edit),
-            label: 'Upiększ',
-            backgroundColor: Colors.lightBlueAccent,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.photo_filter),
-            label: 'Filtry',
-            backgroundColor: Colors.lightBlueAccent,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_to_photos),
-            label: 'Nowa Strona',
-            backgroundColor: Colors.lightBlueAccent,
-          ),
-        ],
-        selectedItemColor: Colors.lightBlueAccent,
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.lightBlueAccent,
+        child: Row(
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.content_copy_rounded),
+                tooltip: 'Skopiuj',
+                color: Colors.white,
+                onPressed: () {  },
+                ),
+              IconButton(
+                  icon: Icon(Icons.text_format),
+                  tooltip: 'Tekst',
+                  color: Colors.white,
+                  onPressed: () {  },
+                ),
+              IconButton(
+                icon: Icon(Icons.edit),
+                tooltip: 'Upiększ',
+                color: Colors.white, onPressed: () {  },
+              ),
+              IconButton(
+                icon: Icon(Icons.photo_filter),
+                tooltip: 'Filtry',
+                color: Colors.white,
+                onPressed: () {  },
+              ),
+              IconButton(
+                icon: Icon(Icons.arrow_left),
+                tooltip: 'Skopiuj',
+                color: Colors.white,
+                onPressed: ()=> {
+                  if(currentPage>1) {
+                    setState(() => currentPage--)
+                  }
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.arrow_right),
+                tooltip: 'Skopiuj',
+                color: Colors.white,
+                onPressed: ()=> {
+                  if(currentPage<allPages) {
+                    setState(() => currentPage++)
+                  }
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.add_to_photos),
+              tooltip: 'Nowa Strona',
+              color: Colors.white,
+                onPressed: ()=> {
+                  _increment()
+                },
+              ),
+              Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.grey,
+                ),
+                padding: const EdgeInsets.all(10),
+                child: Text('$currentPage/$allPages',
+                    style: const TextStyle(color: Colors.white)),
+              )
+            ]
       ),
-    );
+    ));
   }
 }
