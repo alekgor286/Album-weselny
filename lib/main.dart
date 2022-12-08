@@ -1,4 +1,4 @@
-import 'package:album_weselny/start_screen.dart';
+import 'package:foto_budka/start_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -21,5 +21,5 @@ class MyApp extends StatelessWidget {
 }
 
 class Strings {
-  static const String appTitle = 'CUPID';
+  static const String appTitle = 'Album weselny';
 }

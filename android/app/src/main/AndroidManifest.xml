@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.album_weselny">
+    package="com.example.foto_budka">
    <application
-        android:label="CUPID"
+        android:label="FOTO BUDKA"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
