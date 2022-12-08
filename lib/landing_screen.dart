@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,8 +17,10 @@ class LandingScreen extends StatefulWidget {
 }
 
 class _LandingScreenState extends State<LandingScreen> {
-  List<PhotoItem> _items = [];
+  final List<List<PhotoItem>> _items = [[]];
   ScrollController? _scrollController;
+  var currentPage = 1;
+  var allPages = 1;
 
   @override
   void initState() {
@@ -37,15 +40,17 @@ class _LandingScreenState extends State<LandingScreen> {
 
   _openFile() async {
     setState(() {
-      _items = [];
+      _items[currentPage-1] = [];
     });
     Directory appDocDir = await getApplicationDocumentsDirectory();
     var fileSystemEntity = appDocDir.listSync();
+    log('data: $fileSystemEntity');
     fileSystemEntity
         .removeWhere((element) => !basename(element.path).contains(".jpg"));
+
     for (var element in fileSystemEntity) {
       setState(() {
-        _items.add(PhotoItem(File(element.path)));
+        _items[currentPage-1].add(PhotoItem(File(element.path)));
       });
     }
   }
@@ -54,7 +59,7 @@ class _LandingScreenState extends State<LandingScreen> {
     var picture = await ImagePicker().pickImage(source: ImageSource.gallery);
     var file = File(picture!.path);
     setState(() {
-      _items.add(PhotoItem(file));
+      _items[currentPage-1].add(PhotoItem(file));
     });
     _saveFile(file);
     Navigator.of(context).pop();
@@ -64,10 +69,15 @@ class _LandingScreenState extends State<LandingScreen> {
     var picture = await ImagePicker().pickImage(source: ImageSource.camera);
     var file = File(picture!.path);
     setState(() {
-      _items.add(PhotoItem(file));
+      _items[currentPage-1].add(PhotoItem(file));
     });
     _saveFile(file);
     Navigator.of(context).pop();
+  }
+
+  void _increment() {
+    setState(() => allPages++);
+    _items.add([]);
   }
 
   Future<void> _showChoiceDialog(BuildContext context) {
@@ -100,7 +110,7 @@ class _LandingScreenState extends State<LandingScreen> {
   }
 
   Widget _decideImageView() {
-    if (_items.isEmpty) {
+    if (_items[currentPage-1].isEmpty) {
       return Text("Nie wybrano zdjecia!");
     } else {
       return DragAndDropGridView(
@@ -111,14 +121,14 @@ class _LandingScreenState extends State<LandingScreen> {
             crossAxisCount: 3,
           ),
           padding: const EdgeInsets.all(20),
-          itemCount: _items.length,
+          itemCount: _items[currentPage-1].length,
           onWillAccept: (oldIndex, newIndex) {
             return true;
           },
           onReorder: (oldIndex, newIndex) {
-            final temp = _items[oldIndex];
-            _items[oldIndex] = _items[newIndex];
-            _items[newIndex] = temp;
+            final temp = _items[currentPage-1][oldIndex];
+            _items[currentPage-1][oldIndex] = _items[currentPage-1][newIndex];
+            _items[currentPage-1][newIndex] = temp;
 
             setState(() {});
           },
@@ -129,7 +139,7 @@ class _LandingScreenState extends State<LandingScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => DetailScreen(
-                      image: _items[index].image,
+                      image: _items[currentPage-1][index].image,
                     ),
                   ),
                 ).then((value) => _openFile());
@@ -138,7 +148,7 @@ class _LandingScreenState extends State<LandingScreen> {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     fit: BoxFit.cover,
-                    image: FileImage(_items[index].image),
+                    image: FileImage(_items[currentPage-1][index].image),
                   ),
                 ),
               ),
@@ -183,48 +193,98 @@ class _LandingScreenState extends State<LandingScreen> {
           ),
         ),
       ),
-      body: Container(
-          child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            _decideImageView(),
-            ElevatedButton(
-                onPressed: () {
-                  _showChoiceDialog(context);
+        body: Stack(
+            children: <Widget>[
+              Container(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        _decideImageView(),
+                        ElevatedButton(
+                            onPressed: () {
+                              _showChoiceDialog(context);
+                            },
+                            child: Text("Wybierz zdjecie"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.lightBlueAccent,
+                            )),
+                        Row(mainAxisAlignment: MainAxisAlignment.center)
+                      ],
+                    ),
+                  )),
+              Positioned(
+                  right: 5.0,
+                  bottom: 5.0,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xffFEBD2B),
+                    ),
+                    padding: const EdgeInsets.all(15),
+                    child: Text('$currentPage/$allPages',
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  )
+              ),
+            ]),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.lightBlueAccent,
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.content_copy_rounded),
+                tooltip: 'Skopiuj',
+                color: Colors.white,
+                onPressed: () {  },
+                ),
+              IconButton(
+                  icon: Icon(Icons.text_format),
+                  tooltip: 'Tekst',
+                  color: Colors.white,
+                  onPressed: () {  },
+                ),
+              IconButton(
+                icon: Icon(Icons.edit),
+                tooltip: 'Upiększ',
+                color: Colors.white, onPressed: () {  },
+              ),
+              IconButton(
+                icon: Icon(Icons.photo_filter),
+                tooltip: 'Filtry',
+                color: Colors.white,
+                onPressed: () {  },
+              ),
+              IconButton(
+                icon: Icon(Icons.arrow_left),
+                tooltip: 'Poprzednia strona',
+                color: Colors.white,
+                onPressed: ()=> {
+                  if(currentPage>1) {
+                    setState(() => currentPage--)
+                  }
                 },
-                child: Text("Wybierz zdjecie"),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightBlueAccent,
-                )),
-          ],
-        ),
-      )),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.content_copy_rounded),
-            label: 'Skopiuj',
-            backgroundColor: Colors.lightBlueAccent,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.text_format),
-            label: 'Tekst',
-            backgroundColor: Colors.lightBlueAccent,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.edit),
-            label: 'Upiększ',
-            backgroundColor: Colors.lightBlueAccent,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.photo_filter),
-            label: 'Filtry',
-            backgroundColor: Colors.lightBlueAccent,
-          ),
-        ],
-        selectedItemColor: Colors.lightBlueAccent,
+              ),
+              IconButton(
+                icon: Icon(Icons.arrow_right),
+                tooltip: 'Następna strona',
+                color: Colors.white,
+                onPressed: ()=> {
+                  if(currentPage<allPages) {
+                    setState(() => currentPage++)
+                  }
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.add_to_photos),
+              tooltip: 'Nowa Strona',
+              color: Colors.white,
+                onPressed: ()=> {
+                  _increment()
+                },
+              )
+            ]
       ),
-    );
+    ));
   }
 }
