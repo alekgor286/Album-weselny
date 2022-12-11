@@ -1,4 +1,4 @@
-# foto_budka
+# album_weselny
 
 A new Flutter project.
 

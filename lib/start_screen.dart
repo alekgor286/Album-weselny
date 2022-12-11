@@ -1,4 +1,4 @@
-import 'package:foto_budka/landing_screen.dart';
+import 'package:album_weselny/landing_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -45,7 +45,7 @@ class _StartScreenState extends State<StartScreen> {
                     ))),
                 const Padding(padding: EdgeInsets.only(top: 15.0)),
                 Text(
-                    'Aplikacja pozwalająca na \n stworzenie wyjątkowej pamiątki \n w postaci zdjęć z budki',
+                    'Aplikacja pozwalająca na \n stworzenie wyjątkowej pamiątki \n w postaci albumu weselnego',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.lato(
                         textStyle: const TextStyle(
