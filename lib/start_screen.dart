@@ -81,10 +81,31 @@ class _StartScreenState extends State<StartScreen> {
                             MaterialPageRoute(
                                 builder: (context) => const LandingScreen()));
                       },
-                      child: const Text(
-                        'Zaczynajmy!',
-                        style: TextStyle(fontSize: 16.0, color: Colors.white),
-                      ),
+                        child: Stack(
+                          children: [
+                            Text(
+                              'Zaczynajmy!',
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                letterSpacing: 1,
+                                fontWeight: FontWeight.bold,
+                                foreground: Paint()
+                                  ..style = PaintingStyle.stroke
+                                  ..strokeWidth = 1
+                                  ..color = Colors.black,
+                              ),
+                            ),
+                            const Text(
+                              'Zaczynajmy!',
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                letterSpacing: 1,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        )
                     )),
               ))
         ],
