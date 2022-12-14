@@ -56,12 +56,13 @@ class _LandingScreenState extends State<LandingScreen> {
 
   _openGallery(BuildContext context) async {
     var picture = await ImagePicker().pickImage(source: ImageSource.gallery);
-    var file = File(picture!.path);
+    if (picture != null) {
+    var file = File(picture.path);
     setState(() {
       _items[currentPage-1].add(PhotoItem(file));
     });
-    _saveFile(file);
-    Navigator.of(context).pop();
+      _saveFile(file);
+    }
   }
 
   _openCamera(BuildContext context) async {
@@ -71,41 +72,11 @@ class _LandingScreenState extends State<LandingScreen> {
       _items[currentPage-1].add(PhotoItem(file));
     });
     _saveFile(file);
-    Navigator.of(context).pop();
   }
 
   void _increment() {
     setState(() => allPages++);
     _items.add([]);
-  }
-
-  Future<void> _showChoiceDialog(BuildContext context) {
-    return showDialog(
-        context: context,
-        builder: (BuildContext cotext) {
-          return AlertDialog(
-            title: Text("Dokonaj wyboru"),
-            content: SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  GestureDetector(
-                    child: Text("Galeria"),
-                    onTap: () {
-                      _openGallery(context);
-                    },
-                  ),
-                  Padding(padding: EdgeInsets.all(8.0)),
-                  GestureDetector(
-                    child: Text("Aparat"),
-                    onTap: () {
-                      _openCamera(context);
-                    },
-                  )
-                ],
-              ),
-            ),
-          );
-        });
   }
 
   Widget _decideImageView() {
@@ -168,12 +139,12 @@ class _LandingScreenState extends State<LandingScreen> {
             tooltip: 'Drukuj',
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () { _openCamera(context); },
             icon: const Icon(Icons.photo_camera_outlined),
             tooltip: 'Zrób zdjęcie',
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () { _openGallery(context); },
             icon: const Icon(Icons.image),
             tooltip: 'Wybierz zdjęcie z galerii',
           ),
@@ -200,14 +171,6 @@ class _LandingScreenState extends State<LandingScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
                         _decideImageView(),
-                        ElevatedButton(
-                            onPressed: () {
-                              _showChoiceDialog(context);
-                            },
-                            child: Text("Wybierz zdjecie"),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.lightBlueAccent,
-                            )),
                         Row(mainAxisAlignment: MainAxisAlignment.center)
                       ],
                     ),
@@ -218,9 +181,9 @@ class _LandingScreenState extends State<LandingScreen> {
                   child: Container(
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Color(0xffFEBD2B),
+                      color: Colors.lightBlueAccent
                     ),
-                    padding: const EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(4),
                     child: Text('$currentPage/$allPages',
                     style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                   )
