@@ -29,6 +29,9 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  gallery_saver:
+  extended_image: ^6.3.4
+  uuid: ^3.0.7
   image_picker:
   drag_and_drop_gridview:
     git:
@@ -37,6 +40,7 @@ dependencies:
   path_provider:
   flutter:
     sdk: flutter
+  stick_it: ^1.0.0+2
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -69,6 +73,16 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - images/logo.png
+    - assets/icons8-anubis-48.png
+    - assets/icons8-bt21-shooky-48.png
+    - assets/icons8-fire-48.png
+    - assets/icons8-jake-48.png
+    - assets/icons8-keiji-akaashi-48.png
+    - assets/icons8-mate-48.png
+    - assets/icons8-pagoda-48.png
+    - assets/icons8-spring-48.png
+    - assets/icons8-totoro-48.png
+    - assets/icons8-year-of-dragon-48.png
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
