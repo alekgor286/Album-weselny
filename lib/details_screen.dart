@@ -8,12 +8,19 @@ class DetailScreen extends StatelessWidget {
   DetailScreen({Key? key, required this.image}) : super(key: key);
 
   _deleteFile() async {
-    await image.delete();
+    if(await image.exists()) {
+      await image.delete().catchError((e) => print(e));
+    } else {
+      print("File not found");
+    }
   }
 
   _saveFile() async {
     final newImage = await _stickIt.exportImage();
-    image.writeAsBytesSync(newImage);
+    var fileName = "${image.path}_1.jpg";
+    await image.delete();
+    final file = await File(fileName).create();
+    file.writeAsBytesSync(newImage, flush: true);
   }
 
   late StickIt _stickIt;
@@ -60,8 +67,8 @@ class DetailScreen extends StatelessWidget {
             child: Column(
               children: [
                 ElevatedButton(
-                    onPressed: () {
-                      _deleteFile();
+                    onPressed: () async {
+                      await _deleteFile();
                       Navigator.pop(context);
                     },
                     child: Text("Usuń zdjęcie"),
@@ -69,8 +76,9 @@ class DetailScreen extends StatelessWidget {
                       backgroundColor: Colors.lightBlueAccent,
                     )),
                 ElevatedButton(
-                    onPressed: () {
-                      _saveFile();
+                    onPressed: () async {
+                      await _saveFile();
+                      Navigator.pop(context);
                     },
                     child: Text("Zapisz zdjęcie"),
                     style: ElevatedButton.styleFrom(
