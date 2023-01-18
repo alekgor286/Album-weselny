@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
@@ -133,11 +134,11 @@ class _LandingScreenState extends State<LandingScreen> {
       appBar: AppBar(
         title: const Text(Strings.appTitle),
         actions: <Widget>[
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.local_print_shop_outlined),
-            tooltip: 'Drukuj',
-          ),
+          // IconButton(
+          //   onPressed: () {},
+          //   icon: const Icon(Icons.local_print_shop_outlined),
+          //   tooltip: 'Drukuj',
+          // ),
           IconButton(
             onPressed: () { _openCamera(context); },
             icon: const Icon(Icons.photo_camera_outlined),
@@ -149,7 +150,19 @@ class _LandingScreenState extends State<LandingScreen> {
             tooltip: 'Wybierz zdjęcie z galerii',
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () async {
+              for (var _page in _items) {
+                for (var _item in _page) {
+                  if (_item.image.existsSync()) {
+                    await GallerySaver.saveImage(
+                        _item.image.path);
+                  }
+                }
+              }
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text("Zapisano zdjęcia w galerii!"),
+              ));
+            },
             icon: const Icon(Icons.ios_share_rounded),
             tooltip: 'Udostępnij',
           ),
@@ -194,29 +207,29 @@ class _LandingScreenState extends State<LandingScreen> {
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.content_copy_rounded),
-                tooltip: 'Skopiuj',
-                color: Colors.white,
-                onPressed: () {  },
-                ),
-              IconButton(
-                  icon: Icon(Icons.text_format),
-                  tooltip: 'Tekst',
-                  color: Colors.white,
-                  onPressed: () {  },
-                ),
-              IconButton(
-                icon: Icon(Icons.edit),
-                tooltip: 'Upiększ',
-                color: Colors.white, onPressed: () {  },
-              ),
-              IconButton(
-                icon: Icon(Icons.photo_filter),
-                tooltip: 'Filtry',
-                color: Colors.white,
-                onPressed: () {  },
-              ),
+              // IconButton(
+              //   icon: Icon(Icons.content_copy_rounded),
+              //   tooltip: 'Skopiuj',
+              //   color: Colors.white,
+              //   onPressed: () {  },
+              //   ),
+              // IconButton(
+              //     icon: Icon(Icons.text_format),
+              //     tooltip: 'Tekst',
+              //     color: Colors.white,
+              //     onPressed: () {  },
+              //   ),
+              // IconButton(
+              //   icon: Icon(Icons.edit),
+              //   tooltip: 'Upiększ',
+              //   color: Colors.white, onPressed: () {  },
+              // ),
+              // IconButton(
+              //   icon: Icon(Icons.photo_filter),
+              //   tooltip: 'Filtry',
+              //   color: Colors.white,
+              //   onPressed: () {  },
+              // ),
               IconButton(
                 icon: Icon(Icons.arrow_left),
                 tooltip: 'Poprzednia strona',
