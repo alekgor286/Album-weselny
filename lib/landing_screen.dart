@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -8,6 +9,8 @@ import 'package:path/path.dart';
 import 'package:drag_and_drop_gridview/devdrag.dart';
 import 'details_screen.dart';
 import 'main.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
@@ -28,6 +31,67 @@ class _LandingScreenState extends State<LandingScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _openFile();
     });
+  }
+
+  Future<File> createPdfWithImages(List<String> imagePaths) async {
+    final pdf = pw.Document();
+
+    for (var i = 0; i < imagePaths.length; i += 4) {
+      final images = <PdfImage>[];
+      for (var j = i; j < i + 4; j++) {
+        if (j < imagePaths.length) {
+          final image = PdfImage.file(
+            pdf.document,
+            bytes: File(imagePaths[j]).readAsBytesSync(),
+          );
+          images.add(image);
+        }
+      }
+
+      pdf.addPage(
+        pw.Page(
+          build: (pw.Context context) {
+            return pw.Flex(
+              direction: pw.Axis.horizontal,
+              children: <pw.Widget>[
+                for (var i = 0; i < images.length; i++)
+                  pw.Expanded(
+                      flex: 1,
+                      child: pw.Container(
+                        child: pw.Center(child: pw.Image(pw.ImageProxy(images[i])),
+                      )
+                  ),
+                  )],
+            );
+          },
+        ),
+      );
+    }
+
+    final file = File("/storage/emulated/0/Download/image_pdf.pdf");
+    final pdfBytes = await pdf.save();
+    await file.writeAsBytes(pdfBytes);
+    return file;
+  }
+
+  Future<File> createHtmlWithImages(List<String> imagePaths) async {
+    final imagesTags = imagePaths.map((path) async => '<img src="data:image/png;base64, ${base64Encode(await File(path).readAsBytes())}" style="max-width:100%">' ).map((tag)=>tag.then((value)=>value)).toList();
+
+    final htmlContent = '''
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Image Gallery</title>
+    </head>
+    <body>
+      ${await Future.wait(imagesTags)}
+    </body>
+    </html>
+  ''';
+
+    final file = File("/storage/emulated/0/Download/image_gallery.html");
+    await file.writeAsString(htmlContent);
+    return file;
   }
 
   _saveFile(File file) async {
@@ -134,11 +198,28 @@ class _LandingScreenState extends State<LandingScreen> {
       appBar: AppBar(
         title: const Text(Strings.appTitle),
         actions: <Widget>[
-          // IconButton(
-          //   onPressed: () {},
-          //   icon: const Icon(Icons.local_print_shop_outlined),
-          //   tooltip: 'Drukuj',
-          // ),
+          IconButton(
+            onPressed: () {
+              List<String> imagePaths = [];
+              for (var photo in _items[currentPage-1]) {
+                imagePaths.add(photo.image.path);
+              }
+              createHtmlWithImages(imagePaths);
+            },
+            icon: const Icon(Icons.html_outlined),
+            tooltip: 'Drukuj HTML',
+          ),
+          IconButton(
+            onPressed: () {
+              List<String> imagePaths = [];
+              for (var photo in _items[currentPage-1]) {
+                imagePaths.add(photo.image.path);
+              }
+              createPdfWithImages(imagePaths);
+            },
+            icon: const Icon(Icons.local_print_shop_outlined),
+            tooltip: 'Drukuj PDF',
+          ),
           IconButton(
             onPressed: () { _openCamera(context); },
             icon: const Icon(Icons.photo_camera_outlined),

@@ -29,10 +29,11 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  pdf: ^3.8.4
   gallery_saver:
   extended_image: ^6.3.4
   uuid: ^3.0.7
-  image_picker:
+  image_picker: ^0.8.6
   drag_and_drop_gridview:
     git:
       url: https://github.com/DevOrbiter/drag_and_drop_gridview.git
